@@ -1,3 +1,32 @@
 <h1>
   {{title}}
 </h1>
+<hr>
+<h2>Time Picker</h2>
+<app-time-picker [(ngModel)]="timePickerTime"></app-time-picker>
+Time: {{ timePickerTime }}
+<br>
+<button (click)="timePickerTime = 9*1000*60*60">Set Time to 9 AM</button>
+<button (click)="timePickerTime = 10*1000*60*60">Set Time to 10 AM</button>
+<hr>
+<h2>Day Picker</h2>
+<app-day-picker [(ngModel)]="dayPickerDay"></app-day-picker>
+Day: {{ dayPickerDay | date:mediumDate }}
+<br>
+<button (click)="setToYesterday()">Change to yesterday</button>
+<button (click)="setToTomorrow()">Change to tomorrow</button>
+<hr>
+<h2>Day Picker for copy (should stay in sync... doesn't.</h2>
+<app-day-picker [(ngModel)]="dayPickerCopy"></app-day-picker>
+Day: {{ dayPickerCopy | date:mediumDate }}
+<br>
+<hr>
+<h2>Date Picker</h2>
+<app-date-picker [(ngModel)]="datePickerDate"></app-date-picker>
+Date: {{ datePickerDate | date:'medium' }}
+<br>
+<button (click)="setToYesterdayTenAm()">Change to yesterday @ 10AM</button>
+<button (click)="setToTomorrowNineAm()">Change to tomorrow @ 9PM</button>
+<h2>Mirrored Date Picker that ***should*** stay in sync with the previous one</h2>
+<app-date-picker [(ngModel)]="datePickerCopy"></app-date-picker>
+Date: {{ datePickercopy | date:'medium' }}
