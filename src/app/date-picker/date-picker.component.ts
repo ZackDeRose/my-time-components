@@ -1,6 +1,6 @@
-import {Component, DoCheck, forwardRef, OnInit} from '@angular/core';
+import {Component, DoCheck, ElementRef, forwardRef, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
-import {NgbDateParserFormatter} from "@ng-bootstrap/ng-bootstrap";
+import {NgbDateParserFormatter, NgbDatepicker, NgbInputDatepicker} from "@ng-bootstrap/ng-bootstrap";
 import {MyNgbDateParserFormatter} from "../my-nbg-date-parser-formatter";
 
 const noop = () => {};
@@ -21,22 +21,31 @@ export const DATE_PICKER_CONTROL_VALUE_ACCESSOR: any = {
       provide: NgbDateParserFormatter,
       useClass: MyNgbDateParserFormatter
     }
-  ]
+  ],
+  host: {
+    '(document:click)': 'onClick($event)'
+  }
 })
 export class DatePickerComponent implements ControlValueAccessor, DoCheck {
   private innerValue: Date = new Date(Date.now());
   private dayObject: {year: number, month: number, day: number};
   private timeObject: {hour: number, minute: number};
-  
+
+  @ViewChild(NgbInputDatepicker) calendar: NgbInputDatepicker;
+
   private onTouchedCallback: () => void = noop;
   private onChangedCallback: (_: any) => void = noop;
-  
+
+  constructor(private _eref: ElementRef) {}
+
   get value(): Date {
     // console.log('in get');
-    this.value = new Date(this.dayObject.year, this.dayObject.month -1, this.dayObject.day, this.timeObject.hour, this.timeObject.minute);
+
+    this.value = new Date(this.dayObject.year, this.dayObject.month - 1, this.dayObject.day, this.timeObject.hour, this.timeObject.minute);
+
     return this.innerValue;
   }
-  
+
   set value(v: Date){
     if(v.getTime() !== this.innerValue.getTime()){
       this.innerValue = v;
@@ -50,7 +59,7 @@ export class DatePickerComponent implements ControlValueAccessor, DoCheck {
       this.onChangedCallback(v);
     }
   }
-  
+
   writeValue(value: Date){
     if(value === null) {
       value = new Date(Date.now());
@@ -66,23 +75,34 @@ export class DatePickerComponent implements ControlValueAccessor, DoCheck {
       this.timeObject = {hour: hours, minute: minutes};
     }
   }
-  
+
   registerOnChange(fn: (_: any) => void): void{
     this.onChangedCallback = fn;
   }
-  
+
   registerOnTouched(fn: any){
     this.onTouchedCallback = fn;
   }
-  
+
   ngDoCheck() {
-    // console.log('in do check');
+    console.log('doCheck of DatePicker');
     if (this.dayObject) {
       this.value.setFullYear(this.dayObject.year, this.dayObject.month - 1, this.dayObject.day);
       this.value.setHours(this.timeObject.hour, this.timeObject.minute);
       // console.log('sending onchanged callback');
       // this.onChangedCallback(this.value);
     }
+  }
+
+  onClick(event){
+    if(!this._eref.nativeElement.contains(event.target)){
+      this.calendar.close();
+    }
+  }
+
+  closeCalendar(){
+    console.log('triggered');
+    this.calendar.close();
   }
 
 }

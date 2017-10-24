@@ -27,7 +27,6 @@ export const DAY_PICKER_CONTROL_VALUE_ACCESSOR: any = {
       useClass: MyNgbDateParserFormatter
     }
   ],
-  encapsulation: ViewEncapsulation.Native,
   host: {
     '(document:click)': 'onClick($event)'
   }

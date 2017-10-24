@@ -1,11 +1,8 @@
-<form class="form-inline">
-  <div class="form-group">
-    <div class="input-group">
-      <input class="form-control" placeholder="yyyy-mm-dd"
-       name="dp" [(ngModel)]="dayObject" ngbDatepicker #d="ngbDatepicker" disabled="">
-      <button class="input-group-addon" (click)="d.toggle()" type="button">
-        <i class="fa fa-calendar" style="width: 1.2rem; height: 1rem; cursor: pointer;"></i>
-      </button>
-    </div>
-  </div>
-</form>
+<div class="input-group dt-picker">
+  <input class="form-control" placeholder="Select a Date..." name="dp" [(ngModel)]="dayObject" ngbDatepicker #d="ngbDatepicker" disabled="" [firstDayOfWeek]="7">
+  <span class="input-group-btn">
+    <button class="btn btn-default" (click)="d.toggle()" type="button" [disabled]="disabled">
+      <i class="fa fa-calendar" style="cursor: pointer;"></i>
+    </button>
+  </span>
+</div>

@@ -19,8 +19,7 @@ export const TIME_PICKER_CONTROL_VALUE_ACCESSOR: any = {
   styleUrls: [
     './time-picker.component.css',
   ],
-  providers: [TIME_PICKER_CONTROL_VALUE_ACCESSOR],
-  encapsulation: ViewEncapsulation.Native
+  providers: [TIME_PICKER_CONTROL_VALUE_ACCESSOR]
 })
 export class TimePickerComponent implements ControlValueAccessor, DoCheck {
   private innerValue: number = 0;
