@@ -46,7 +46,7 @@ Official maven site: https://maven.apache.org/
 4. You can find your .war file in `[project-directory]/build/ivr-admin.war`
 
 
-** Building with Maven **
+**Building with Maven**
 1. Open a console/command line and navigate to the project directory [where you stored the source files].
 2. Edit the src/assets/config.json to point to the most recent version of the SF_DTE_GUI_Services:
 
