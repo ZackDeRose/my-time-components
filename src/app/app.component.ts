@@ -13,27 +13,51 @@ export class AppComponent implements OnInit{
   datePickerDate: Date;
   datePickerCopy: Date;
 
-  ngOnInit(){
+  constructor(){
     this.timePickerTime = 34200000;
-    this.dayPickerDay = new Date(Date.now());
+    this.dayPickerDay = new Date();
     this.dayPickerCopy = this.dayPickerDay;
     this.datePickerDate = new Date();
     this.datePickerCopy = this.datePickerDate;
   }
-
-  setToTomorrow(){
-    this.dayPickerDay = new Date(Date.now() + 24*1000*60*60);
+  
+  ngOnInit(){
+    // this.timePickerTime = 34200000;
+    // this.dayPickerDay = new Date();
+    // this.dayPickerCopy = this.dayPickerDay;
+    // this.datePickerDate = new Date();
+    // this.datePickerCopy = this.datePickerDate;
+  }
+  
+  onDayChange(n: number){
+    let temp = new Date(n);
+    this.dayPickerDay.setFullYear(temp.getFullYear(), temp.getMonth(), temp.getDate());
+    this.dayPickerDay.setHours(temp.getHours(), temp.getMinutes(), temp.getSeconds(), temp.getMilliseconds())
+  }
+  
+  updateDay(n: number){
+    console.log('updating day');
+    let temp = new Date(n);
+    this.dayPickerDay.setFullYear(temp.getFullYear(), temp.getMonth(), temp.getDate());
   }
 
-  setToYesterday(){
-    this.dayPickerDay = new Date(Date.now() - 24*1000*60*60);
+  setToJanuary1(){
+    this.dayPickerDay.setFullYear(2017, 0, 1);
+    console.log(this.dayPickerDay.toLocaleDateString());
   }
 
-  setToTomorrowNineAm(){
-    this.datePickerDate = new Date(2017, 9, 9, 21, 0, 0, 0);
+  setToDecember31(){
+    this.dayPickerDay.setFullYear(2017, 11, 31);
+    console.log(this.dayPickerDay.toLocaleDateString());
   }
 
-  setToYesterdayTenAm(){
-    this.datePickerDate = new Date(2017, 9, 7, 10);
+  setToJanuary1NineAm(){
+    this.datePickerDate.setFullYear(2017, 0, 1);
+    this.datePickerDate.setHours(9, 0, 0, 0);
+  }
+
+  setToDecember31TenPm(){
+    this.datePickerDate.setFullYear(2017, 11, 31);
+    this.datePickerDate.setHours(22, 0, 0, 0);
   }
 }

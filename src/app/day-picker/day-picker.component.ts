@@ -1,18 +1,12 @@
 import {
   Component, forwardRef, DoCheck, ViewChild, AfterViewInit, Injectable, ViewEncapsulation,
-  Input, ElementRef
+  Input, ElementRef, Output, OnInit, OnChanges, EventEmitter
 } from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {NgbDateParserFormatter, NgbDatepicker, NgbDateStruct, NgbInputDatepicker} from "@ng-bootstrap/ng-bootstrap";
 import {MyNgbDateParserFormatter} from "../my-nbg-date-parser-formatter";
+import {Observable} from "rxjs";
 
-const noop = () => {};
-
-export const DAY_PICKER_CONTROL_VALUE_ACCESSOR: any = {
-  provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => DayPickerComponent),
-  multi: true
-};
 
 @Component({
   selector: 'app-day-picker',
@@ -21,7 +15,7 @@ export const DAY_PICKER_CONTROL_VALUE_ACCESSOR: any = {
     './day-picker.component.css'
   ],
   providers: [
-    DAY_PICKER_CONTROL_VALUE_ACCESSOR,
+    // DAY_PICKER_CONTROL_VALUE_ACCESSOR,
     {
       provide: NgbDateParserFormatter,
       useClass: MyNgbDateParserFormatter
@@ -31,63 +25,54 @@ export const DAY_PICKER_CONTROL_VALUE_ACCESSOR: any = {
     '(document:click)': 'onClick($event)'
   }
 })
-export class DayPickerComponent implements ControlValueAccessor, DoCheck {
-  private innerValue: Date = new Date(Date.now());
+export class DayPickerComponent implements OnInit, OnChanges, DoCheck {
   private dayObject: {year: number, month: number, day: number};
+  @Input() date: Date;
   @Input() disabled: boolean;
-
-  private onTouchedCallback: () => void = noop;
-  private onChangedCallback: (_: any) => void = noop;
-
+  // @Output() updatedDate: EventEmitter<number> = new EventEmitter<number>();
   @ViewChild(NgbInputDatepicker) calendar: NgbInputDatepicker;
-
+  previousDateValue: number;
+  previousDayValue: number;
+  
   constructor(private _eref: ElementRef) {}
-
-  get value(): Date {
-    // console.log('in get');
-    this.value = new Date(this.dayObject.year, this.dayObject.month - 1, this.dayObject.day);
-
-    return this.innerValue;
+  
+  ngOnInit():void {
+    this.dayObject = {year: this.date.getFullYear(), month: this.date.getMonth() + 1, day: this.date.getDate()};
+    this.previousDateValue = this.date.getTime();
+    this.previousDayValue = this.getIdentifier(this.dayObject);
   }
-
-  set value(v: Date){
-    if(v.getTime() !== this.innerValue.getTime()){
-      this.innerValue = v;//setFullYear(v.getFullYear(), v.getMonth(), v.getDate());
-      let years = this.innerValue.getFullYear();
-      let months = this.innerValue.getMonth() + 1;
-      let days = this.innerValue.getDate();
-      this.dayObject = {year: years, month: months, day: days};
-      this.onChangedCallback(v);
+  
+  getIdentifier(obj: {year: number, month: number, day: number}): number {
+    return obj.year * 10000 + obj.month * 100 + obj.day;
+  }
+  
+  ngOnChanges(): void {
+    console.log('in on changes');
+    if (this.dayObject) {
+      this.date.setFullYear(this.dayObject.year, this.dayObject.month - 1, this.dayObject.day);
     }
   }
-
-  writeValue(value: Date){
-    if(!value) {
-      value = new Date(Date.now());
-    }
-    if(value.getTime() !== this.innerValue.getTime()){
-      this.innerValue = value; //.setFullYear(value.getFullYear(), value.getMonth(), value.getDate());
-      let years = this.innerValue.getFullYear();
-      let months = this.innerValue.getMonth() + 1;
-      let days = this.innerValue.getDate();
-      this.dayObject = {year: years, month: months, day: days};
-    }
-  }
-
-  registerOnChange(fn: (_: any) => void): void{
-    this.onChangedCallback = fn;
-  }
-
-  registerOnTouched(fn: any){
-    this.onTouchedCallback = fn;
+  
+  datesAreInSync(): boolean {
+    let temp = {year: this.date.getFullYear(), month: this.date.getMonth() + 1, day: this.date.getDate()};
+    if(this.dayObject.year !== temp.year) return false;
+    if(this.dayObject.month !== temp.month) return false;
+    if(this.dayObject.day !== temp.day) return false;
   }
 
   ngDoCheck() {
     // console.log('doCheck of DayPicker');
-    if (this.dayObject) {
-      this.value.setFullYear(this.dayObject.year, this.dayObject.month - 1, this.dayObject.day);
-      // console.log('sending onchanged callback');
-      // this.onChangedCallback(this.value);
+    if(this.date.getTime() !== this.previousDateValue) {
+      this.dayObject = {year: this.date.getFullYear(), month: this.date.getMonth() + 1, day: this.date.getDate()};
+      this.previousDateValue = this.date.getTime();
+      this.previousDayValue = this.getIdentifier(this.dayObject);
+      // this.updatedDate.emit(this.date.getTime());
+    }
+    if(this.getIdentifier(this.dayObject) !== this.previousDayValue){
+      this.date.setFullYear(this.dayObject.year, this.dayObject.month - 1, this.dayObject.day);
+      this.previousDateValue = this.date.getTime();
+      this.previousDayValue = this.getIdentifier(this.dayObject);
+      // this.updatedDate.emit(this.date.getTime());
     }
   }
 

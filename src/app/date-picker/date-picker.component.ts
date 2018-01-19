@@ -1,22 +1,17 @@
-import {Component, DoCheck, ElementRef, forwardRef, OnInit, ViewChild, ViewEncapsulation} from '@angular/core';
+import {
+  Component, DoCheck, ElementRef, forwardRef, Input, OnChanges, OnInit, ViewChild,
+  ViewEncapsulation
+} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {NgbDateParserFormatter, NgbDatepicker, NgbInputDatepicker} from "@ng-bootstrap/ng-bootstrap";
 import {MyNgbDateParserFormatter} from "../my-nbg-date-parser-formatter";
 
-const noop = () => {};
-
-export const DATE_PICKER_CONTROL_VALUE_ACCESSOR: any = {
-  provide: NG_VALUE_ACCESSOR,
-  useExisting: forwardRef(() => DatePickerComponent),
-  multi: true
-};
 
 @Component({
   selector: 'app-date-picker',
   templateUrl: './date-picker.component.html',
   styleUrls: ['./date-picker.component.css'],
   providers: [
-    DATE_PICKER_CONTROL_VALUE_ACCESSOR,
     {
       provide: NgbDateParserFormatter,
       useClass: MyNgbDateParserFormatter
@@ -26,71 +21,43 @@ export const DATE_PICKER_CONTROL_VALUE_ACCESSOR: any = {
     '(document:click)': 'onClick($event)'
   }
 })
-export class DatePickerComponent implements ControlValueAccessor, DoCheck {
-  private innerValue: Date = new Date(Date.now());
+export class DatePickerComponent implements OnInit, DoCheck {
   private dayObject: {year: number, month: number, day: number};
-  private timeObject: {hour: number, minute: number};
-
+  private timeObject: {hour: number, minute: number, second: number};
+  @Input() date: Date;
+  @Input() disabled: boolean;
   @ViewChild(NgbInputDatepicker) calendar: NgbInputDatepicker;
-
-  private onTouchedCallback: () => void = noop;
-  private onChangedCallback: (_: any) => void = noop;
-
+  previousDateValue: number;
+  previousDateObjValue: number;
+  
   constructor(private _eref: ElementRef) {}
-
-  get value(): Date {
-    // console.log('in get');
-
-    this.value = new Date(this.dayObject.year, this.dayObject.month - 1, this.dayObject.day, this.timeObject.hour, this.timeObject.minute);
-
-    return this.innerValue;
+  
+  ngOnInit(): void {
+    this.dayObject = {year: this.date.getFullYear(), month: this.date.getMonth() + 1, day: this.date.getDate()};
+    this.timeObject = {hour: this.date.getHours(), minute: this.date.getMinutes(), second: this.date.getSeconds()};
+    this.previousDateValue = this.date.getTime();
+    this.previousDateObjValue = this.getDateObjValue();
   }
-
-  set value(v: Date){
-    if(v.getTime() !== this.innerValue.getTime()){
-      this.innerValue = v;
-      let years = this.innerValue.getFullYear();
-      let months = this.innerValue.getMonth() + 1;
-      let days = this.innerValue.getDate();
-      let hours = this.innerValue.getHours();
-      let minutes = this.innerValue.getMinutes();
-      this.dayObject = {year: years, month: months, day: days};
-      this.timeObject = {hour: hours, minute: minutes};
-      this.onChangedCallback(v);
-    }
+  
+  getDateObjValue(): number {
+    let toReturn = 0;
+    toReturn += this.dayObject.year * 10000 + this.dayObject.month * 100 + this.dayObject.day;
+    toReturn += this.timeObject.second * 100000000 + this.timeObject.minute * 10000000000 + this.timeObject.hour * 1000000000000;
+    return toReturn;
   }
-
-  writeValue(value: Date){
-    if(value === null) {
-      value = new Date(Date.now());
-    }
-    if(value.getTime() !== this.innerValue.getTime()){
-      this.innerValue = value; //.setFullYear(value.getFullYear(), value.getMonth(), value.getDate());
-      let years = this.innerValue.getFullYear();
-      let months = this.innerValue.getMonth() + 1;
-      let days = this.innerValue.getDate();
-      let hours = this.innerValue.getHours();
-      let minutes = this.innerValue.getMinutes();
-      this.dayObject = {year: years, month: months, day: days};
-      this.timeObject = {hour: hours, minute: minutes};
-    }
-  }
-
-  registerOnChange(fn: (_: any) => void): void{
-    this.onChangedCallback = fn;
-  }
-
-  registerOnTouched(fn: any){
-    this.onTouchedCallback = fn;
-  }
-
+  
   ngDoCheck() {
-    console.log('doCheck of DatePicker');
-    if (this.dayObject) {
-      this.value.setFullYear(this.dayObject.year, this.dayObject.month - 1, this.dayObject.day);
-      this.value.setHours(this.timeObject.hour, this.timeObject.minute);
-      // console.log('sending onchanged callback');
-      // this.onChangedCallback(this.value);
+    if(this.date.getTime() !== this.previousDateValue){
+      this.dayObject = {year: this.date.getFullYear(), month: this.date.getMonth() + 1, day: this.date.getDate()};
+      this.timeObject = {hour: this.date.getHours(), minute: this.date.getMinutes(), second: this.date.getSeconds()};
+      this.previousDateValue = this.date.getTime();
+      this.previousDateObjValue = this.getDateObjValue();
+    }
+    if(this.getDateObjValue() !== this.previousDateObjValue){
+      this.date.setFullYear(this.dayObject.year, this.dayObject.month -1, this.dayObject.day);
+      this.date.setHours(this.timeObject.hour, this.timeObject.minute, this.timeObject.second, 0);
+      this.previousDateValue = this.date.getTime();
+      this.previousDateObjValue = this.getDateObjValue();
     }
   }
 

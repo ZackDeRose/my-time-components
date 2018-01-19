@@ -26,32 +26,32 @@
             </div>
           </div>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-4" *ngIf="dayPickerDay">
           <div class="panel panel-default">
             <div class="panel-heading">
               <h3 class="panel-title">Day Picker</h3>
             </div>
             <div class="panel-body">
               <div class="form-group">
-                <app-day-picker [(ngModel)]="dayPickerDay"></app-day-picker>
+                <app-day-picker [date]="dayPickerDay"></app-day-picker>
               </div>
               <div class="form-group">
                 <label>Current Setting</label>
                 <p class="form-control-static">
-                  {{ dayPickerDay | date:mediumDate }}
+                  {{ dayPickerDay.toLocaleDateString() }}
                 </p>
               </div>
-              <button class="btn btn-default" (click)="setToYesterday()">Change to yesterday</button>
-              <button class="btn btn-default" (click)="setToTomorrow()">Change to tomorrow</button>
-              <hr />
+              <button class="btn btn-default" (click)="setToJanuary1()">Change to January 1</button>
+              <button class="btn btn-default" (click)="setToDecember31()">Change to December 31</button>
+              <hr>
               <div class="form-group">
-                <label>Day Picker for copy <br> <small>should stay in sync... doesn't.</small></label>
-                <app-day-picker [(ngModel)]="dayPickerCopy"></app-day-picker>
+                <label>Day Picker for copy <br> <small>should stay in sync....</small></label>
+                <app-day-picker [date]="dayPickerCopy"></app-day-picker>
               </div>
               <div class="form-group">
                 <label>Current Setting</label>
                 <p class="form-control-static">
-                  {{ dayPickerCopy | date:mediumDate }}
+                  {{ dayPickerCopy.toLocaleDateString() }}
                 </p>
               </div>
             </div>
@@ -64,25 +64,25 @@
             </div>
             <div class="panel-body">
               <div class="form-group">
-                <app-date-picker [(ngModel)]="datePickerDate"></app-date-picker>
+                <app-date-picker [date]="datePickerDate"></app-date-picker>
               </div>
               <div class="form-group">
                 <label>Current Setting</label>
                 <p class="form-control-static">
-                  {{ datePickerDate | date:'medium' }}
+                  {{ datePickerDate.toLocaleString() }}
                 </p>
               </div>
-              <button class="btn btn-default" (click)="setToYesterdayTenAm()">Change to yesterday @ 10AM</button>
-              <button class="btn btn-default" (click)="setToTomorrowNineAm()">Change to tomorrow @ 9PM</button>
+              <button class="btn btn-default" (click)="setToJanuary1NineAm()">Change to January 1 @ 9 AM</button>
+              <button class="btn btn-default" (click)="setToDecember31TenPm()">Change to December 31 @ 10 PM</button>
               <hr />
               <div class="form-group">
                 <label>Mirrored Date Picker <br> <small>***should*** stay in sync with the previous one</small></label>
-                <app-date-picker [(ngModel)]="datePickerCopy"></app-date-picker>
+                <app-date-picker [date]="datePickerCopy"></app-date-picker>
               </div>
               <div class="form-group">
                 <label>Current Setting</label>
                 <p class="form-control-static">
-                  {{ datePickercopy | date:'medium' }}
+                  {{ datePickerCopy.toLocaleString() }}
                 </p>
               </div>
             </div>

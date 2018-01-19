@@ -1,6 +1,13 @@
 <ngb-timepicker [(ngModel)]="timeObject" [meridian]="true" [ngModelOptions]="{standalone: true}"></ngb-timepicker><br>
 <div class="input-group dt-picker">
-  <input class="form-control" placeholder="Select a Date..." name="dp" [(ngModel)]="dayObject" ngbDatepicker #d="ngbDatepicker" disabled="" [firstDayOfWeek]="7">
+  <input class="form-control"
+         placeholder="Select a Date..."
+         name="dp"
+         [(ngModel)]="dayObject"
+         ngbDatepicker
+         #d="ngbDatepicker"
+         [firstDayOfWeek]="7"
+         readonly>
   <span class="input-group-btn">
     <button class="btn btn-default" (click)="d.toggle()" type="button" [disabled]="disabled">
       <i class="fa fa-calendar" style="cursor: pointer;"></i>
